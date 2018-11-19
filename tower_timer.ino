@@ -1,30 +1,30 @@
-//these macros are here to preset the time to when the device is programmed.
+//macros to set the time on program.
 #define SECOND 40
-#define MINUTE 51
-#define HOUR   17
+#define MINUTE 28
+#define HOUR   20
+
+#define NUMBER_OF_TIMERS 2
 
 int ledPin=13;
-int pd2=2;
-int pd3=3;
-int pd4=4;
-int pd5=5; 
-int pd6=6;
-int a6=19;
+
+
+typedef struct {
+  int gpio;
+  int hour_on;
+  int hour_off;
+}timer_t;
 
 int now=0;
 int way_back_when=0;
 int millisecond=0,minute=MINUTE,second=SECOND,hour=HOUR;
 
 
-void toggle_lights(){
-static int blan;
-if(blan%2){
-  digitalWrite(pd2,LOW);
-}else{
-  digitalWrite(pd2,HIGH);
-}
-blan++;
-}
+
+
+timer_t timers[2] = {
+  {3,7,19},
+  {4,5,21}
+  };
 
 
 void toggle_led(){
@@ -37,46 +37,27 @@ if(blan%2){
 blan++;
 }
 
-
-void good_morning(){
-  digitalWrite(pd2,LOW);
+void check_timers(int h){
+  for(int i=0;i<NUMBER_OF_TIMERS;i++){
+    if(h>=timers[i].hour_on && h<timers[i].hour_off)
+      digitalWrite(timers[i].gpio,LOW);
+     else{
+      digitalWrite(timers[i].gpio,HIGH);
+     }
+  
+  }
 }
-
-void good_night(){
-   digitalWrite(pd2,HIGH);
-}
-
-void toggle_water(){
-static int blan;
-if(blan%2){
-  digitalWrite(pd3,HIGH);
-}else{
-  digitalWrite(pd3,LOW);
-}
-blan++;
-}
-
 
 void setup() {
   
 Serial.begin(9600);
   // put your setup code here, to run once:
 pinMode(ledPin, OUTPUT);
-pinMode(pd2,OUTPUT);
-pinMode(pd3,OUTPUT);
 
-if(hour>=4&&hour<=23){
-  good_morning();
-}else{
-  good_night();
-}
+for(int i=0;i<NUMBER_OF_TIMERS;i++)
+  pinMode(timers[i].gpio,OUTPUT);
 
-digitalWrite(pd3,HIGH);
-//toggle_lights();
-toggle_water();
-//for(int i=0;i<32;i++){
-//pinMode(i,OUTPUT);
-//}
+check_timers(hour);
 }
  
 void loop() {
@@ -91,44 +72,17 @@ void loop() {
       toggle_led();
       millisecond=0;
       if(second>=59){
-       /*comment out following two lines to make the timer operate better*/ 
-       //toggle_lights();
-       //toggle_water();
         minute++;
         second=0;
-        if((minute+1)%15==0){
-          toggle_water();
-        }
         if(minute>=59){
           hour++;
           minute=0;
-          if(hour>=4&&hour<=23){
-            good_morning();
-          }else{
-            good_night();
-          }
-          if(hour>=23){
-            hour=0;
-          }
-        }
-
-        
+          check_timers(hour);
+        }  
       }
     }
   }else{
     delayMicroseconds(200);
   }
   now=millis();
-
-  // put your main code here, to run repeatedly:
-  //for(int i=0;i<32;i++){
-  //  digitalWrite(pd3,HIGH);
-  //}
-  //digitalWrite(pd3,HIGH);
- //   digitalWrite(pd2,HIGH);
-//  delay(1000);
-// digitalWrite(pd3,LOW);
-//  digitalWrite(pd2,LOW);
-//  delay(1000);
-
 }
