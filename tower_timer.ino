@@ -1,7 +1,7 @@
 //macros to set the time on program.
-#define SECOND 40
-#define MINUTE 28
-#define HOUR   20
+#define SECOND 55
+#define MINUTE 14
+#define HOUR   17
 
 #define NUMBER_OF_TIMERS 2
 
@@ -24,7 +24,7 @@ int millisecond=0,minute=MINUTE,second=SECOND,hour=HOUR;
 timer_t timers[2] = {
   {3,7,19},
   {4,5,21}
-  };
+ };
 
 
 void toggle_led(){
@@ -44,13 +44,12 @@ void check_timers(int h){
      else{
       digitalWrite(timers[i].gpio,HIGH);
      }
-  
   }
 }
 
 void setup() {
   
-Serial.begin(9600);
+Serial.begin(115200);
   // put your setup code here, to run once:
 pinMode(ledPin, OUTPUT);
 
@@ -65,24 +64,30 @@ void loop() {
   if(now!=way_back_when){
     way_back_when=now;
     millisecond++;
-    if(millisecond>=994){
-      sprintf(str,"hour: %d, minute: %d, second: %d",hour,minute,second);
-      Serial.println(str);
+    if(millisecond>=978){
       second++;
+           sprintf(str,"hour: %d, minute: %d, second: %d",hour,minute,second);
+      Serial.println(str);
+
       toggle_led();
       millisecond=0;
       if(second>=59){
+       /* for(int i=0;i<42;i++){
+          while(now==way_back_when)
+            now=millis();
+          way_back_when = now;
+        }*/
         minute++;
         second=0;
+        millisecond=0;
         if(minute>=59){
+ 
           hour++;
           minute=0;
           check_timers(hour);
         }  
       }
     }
-  }else{
-    delayMicroseconds(200);
   }
   now=millis();
 }
