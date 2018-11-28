@@ -1,7 +1,7 @@
 //macros to set the time on program.
 #define SECOND 55
-#define MINUTE 14
-#define HOUR   17
+#define MINUTE 59
+#define HOUR   23
 
 #define NUMBER_OF_TIMERS 2
 
@@ -18,14 +18,10 @@ int now=0;
 int way_back_when=0;
 int millisecond=0,minute=MINUTE,second=SECOND,hour=HOUR;
 
-
-
-
 timer_t timers[2] = {
   {3,7,19},
   {4,5,21}
  };
-
 
 void toggle_led(){
 static int blan;
@@ -84,6 +80,8 @@ void loop() {
  
           hour++;
           minute=0;
+          if(hour==24)
+            hour=0;
           check_timers(hour);
         }  
       }
